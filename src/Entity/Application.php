@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ApplicationRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ApplicationRepository::class)]
@@ -18,6 +19,12 @@ class Application
 
     #[ORM\Column(length: 3000)]
     private ?string $description = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $logo = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created = null;
 
     public function getId(): ?int
     {
@@ -62,5 +69,29 @@ class Application
             'name' => $this->getName(),
             'description' => $this->getDescription(),
         ];
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): static
+    {
+        $this->logo = $logo;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(\DateTimeInterface $created): static
+    {
+        $this->created = $created;
+
+        return $this;
     }
 }
