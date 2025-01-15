@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\InvoiceRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
@@ -30,6 +31,21 @@ class Invoice
 
     #[ORM\Column(length: 10)]
     private ?string $company_post_code = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $created = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $updated = null;
+
+    #[ORM\Column(length: 35, nullable: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 15, nullable: true)]
+    private ?string $phone = null;
+
+    #[ORM\Column(length: 16)]
+    private ?string $tax_number = null;
 
     public function getId(): ?int
     {
@@ -111,6 +127,66 @@ class Invoice
     public function setCompanyPostCode(string $company_post_code): static
     {
         $this->company_post_code = $company_post_code;
+
+        return $this;
+    }
+
+    public function getCreated(): ?\DateTimeInterface
+    {
+        return $this->created;
+    }
+
+    public function setCreated(\DateTimeInterface $created): static
+    {
+        $this->created = $created;
+
+        return $this;
+    }
+
+    public function getUpdated(): ?\DateTimeInterface
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(\DateTimeInterface $updated): static
+    {
+        $this->updated = $updated;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): static
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getTaxNumber(): ?string
+    {
+        return $this->tax_number;
+    }
+
+    public function setTaxNumber(string $tax_number): static
+    {
+        $this->tax_number = $tax_number;
 
         return $this;
     }
