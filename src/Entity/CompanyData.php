@@ -37,6 +37,9 @@ class CompanyData
     #[ORM\Column(length: 15)]
     private ?string $phone = null;
 
+    #[ORM\ManyToOne(inversedBy: 'companyData')]
+    private ?User $user_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -141,6 +144,18 @@ class CompanyData
     public function setPhone(string $phone): static
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?User $user_id): static
+    {
+        $this->user_id = $user_id;
 
         return $this;
     }

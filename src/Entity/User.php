@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -32,6 +34,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    /**
+     * @var Collection<int, Invoice>
+     */
+    #[ORM\OneToMany(targetEntity: Invoice::class, mappedBy: 'user_id')]
+    private Collection $invoices;
+
+    /**
+     * @var Collection<int, CompanyData>
+     */
+    #[ORM\OneToMany(targetEntity: CompanyData::class, mappedBy: 'user_id')]
+    private Collection $companyData;
+
+    public function __construct()
+    {
+        $this->invoices = new ArrayCollection();
+        $this->companyData = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -114,5 +134,65 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Invoice>
+     */
+    public function getInvoices(): Collection
+    {
+        return $this->invoices;
+    }
+
+    public function addInvoice(Invoice $invoice): static
+    {
+        if (!$this->invoices->contains($invoice)) {
+            $this->invoices->add($invoice);
+            $invoice->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeInvoice(Invoice $invoice): static
+    {
+        if ($this->invoices->removeElement($invoice)) {
+            // set the owning side to null (unless already changed)
+            if ($invoice->getUserId() === $this) {
+                $invoice->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CompanyData>
+     */
+    public function getCompanyData(): Collection
+    {
+        return $this->companyData;
+    }
+
+    public function addCompanyData(CompanyData $companyData): static
+    {
+        if (!$this->companyData->contains($companyData)) {
+            $this->companyData->add($companyData);
+            $companyData->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompanyData(CompanyData $companyData): static
+    {
+        if ($this->companyData->removeElement($companyData)) {
+            // set the owning side to null (unless already changed)
+            if ($companyData->getUserId() === $this) {
+                $companyData->setUserId(null);
+            }
+        }
+
+        return $this;
     }
 }
