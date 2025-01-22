@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/invoices')]
 class InvoiceController extends AbstractController
@@ -26,6 +27,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route(name: 'app_invoice', methods: ['GET'])]
+    #[IsGranted('ROLE_GET_INVOICE')]
     public function index(): JsonResponse
     {
         $invoices = $this->invoiceRepository->findAll();
@@ -41,7 +43,23 @@ class InvoiceController extends AbstractController
             ->response();
     }
 
+    #[Route(
+        '/{id}',
+        name: 'app_invoice_show',
+        methods: ['GET'])
+    ]
+    #[IsGranted('ROLE_GET_INVOICE_BY_ID')]
+    public function getInvoiceById(int $id): JsonResponse
+    {
+        $invoice = $this->invoiceRepository->findOneBy(['id' => $id]);
+
+        return $this->apiResponseFormatter
+            ->withData($invoice->toArray())
+            ->response();
+    }
+
     #[Route(name: 'app_invoice_new', methods: ['POST'])]
+    #[IsGranted('ROLE_CREATE_INVOICE')]
     public function create(Request $request): JsonResponse
     {
         $invoiceInformation = json_decode($request->getContent(), true);
