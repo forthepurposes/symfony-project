@@ -28,8 +28,8 @@ class NewUserController extends AbstractController
         name: 'app_user',
         methods: ['GET'])
     ]
-    #[IsGranted('ROLE_SUPER_ADMIN',
-        message: 'You are not allowed to access the admin dashboard.')]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function index(): JsonResponse
     {
         $users = $this->userRepository->findAll();
@@ -78,6 +78,8 @@ class NewUserController extends AbstractController
         name: 'create_user',
         methods: ['POST'])
     ]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function create(Request $request) : JsonResponse
     {
         $requestData = json_decode($request->getContent(), true);
@@ -105,6 +107,8 @@ class NewUserController extends AbstractController
         name: 'update_user',
         methods: ['PATCH'])
     ]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function update(Request $request, int $id, UserPasswordHasherInterface $passwordHasher) : JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
@@ -124,6 +128,8 @@ class NewUserController extends AbstractController
 
     }
 
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     #[Route('/users/{id}',
         name: 'delete_user',
         methods: ['DELETE'])
