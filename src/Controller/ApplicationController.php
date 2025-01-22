@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api/applications')]
 final class ApplicationController extends AbstractController
@@ -19,7 +20,11 @@ final class ApplicationController extends AbstractController
     {
     }
 
-    #[Route(name: 'app_application_index', methods: ['GET'])]
+    #[Route(
+        name: 'app_application_index',
+        methods: ['GET'])
+    ]
+    #[IsGranted('ROLE_LIST_APPLICATION')]
     public function index(ApplicationRepository $applicationRepository): Response
     {
         $application = $applicationRepository->findAll();
@@ -35,7 +40,11 @@ final class ApplicationController extends AbstractController
 
     }
 
-    #[Route(name: 'app_application_new', methods: ['POST'])]
+    #[Route(
+        name: 'app_application_new',
+        methods: ['POST'])
+    ]
+    #[IsGranted('ROLE_ADD_APPLICATION')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -59,7 +68,12 @@ final class ApplicationController extends AbstractController
 
     }
 
-    #[Route('/{id}', name: 'app_application_show', methods: ['GET'])]
+    #[Route(
+        '/{id}',
+        name: 'app_application_show',
+        methods: ['GET'])
+    ]
+    #[IsGranted('ROLE_SHOW_APPLICATION')]
     public function show(Application $application): Response
     {
         return $this->render('application/show.html.twig', [
@@ -67,7 +81,11 @@ final class ApplicationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_application_edit', methods: ['GET', 'POST'])]
+    #[Route(
+        '/{id}/edit',
+        name: 'app_application_edit',
+        methods: ['GET', 'POST'])
+    ]
     public function edit(Request $request, Application $application, EntityManagerInterface $entityManager): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -89,7 +107,12 @@ final class ApplicationController extends AbstractController
             ->response();
     }
 
-    #[Route('/{id}', name: 'app_application_delete', methods: ['DELETE'])]
+    #[Route(
+        '/{id}',
+        name: 'app_application_delete',
+        methods: ['DELETE'])
+    ]
+    #[IsGranted('ROLE_DELETE_APPLICATION')]
     public function delete(Request $request, Application $application, EntityManagerInterface $entityManager): Response
     {
         $request->get('id');

@@ -5,21 +5,25 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Exception\UserNotFoundException;
 use App\Formatter\ApiResponseFormatter;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api')]
 class NewUserController extends AbstractController
 {
     public function __construct(
         private UserRepository       $userRepository,
-        private ApiResponseFormatter $apiResponseFormatter
+        private ApiResponseFormatter $apiResponseFormatter,
+        private ValidatorInterface  $validator
     )
     {
     }
@@ -64,11 +68,15 @@ class NewUserController extends AbstractController
         name: 'app_user_show',
         methods: ['GET'])
     ]
-    #[IsGranted('ROLE_ADMIN',
-        message: 'You are not allowed to access to this function.')]
+
+    #[IsGranted('ROLE_GET_USER_BY_ID')]
     public function show(int $id) : JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
+
+        if(!$user) {
+            throw new UserNotFoundException();
+        }
 
         return $this->apiResponseFormatter
             ->withData($user->toArray())
@@ -112,12 +120,25 @@ class NewUserController extends AbstractController
     public function update(Request $request, int $id, UserPasswordHasherInterface $passwordHasher) : JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
+        if(!$user) {
+            throw new UserNotFoundException();
+        }
+
         $newUserData = json_decode($request->getContent(), true);
 
         (empty($newUserData['email'])) ?  : $user->setEmail($newUserData['email']);
         if(!empty($newUserData['password'])) {
             $hashedPassword = $passwordHasher->hashPassword($user, $newUserData['password']);
             $user->setPassword($hashedPassword);
+        }
+        $errors = $this->validator->validate($user);
+
+        if(count($errors) > 0) {
+            return $this->apiResponseFormatter
+                ->withMessage('Invalid request')
+                ->withStatus(Response::HTTP_BAD_REQUEST)
+                ->withErrors([$errors->get(0)->getMessage()])
+                ->response();
         }
 
         $this->userRepository->save($user);
