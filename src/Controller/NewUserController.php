@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/api')]
 class NewUserController extends AbstractController
@@ -27,6 +28,8 @@ class NewUserController extends AbstractController
         name: 'app_user',
         methods: ['GET'])
     ]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function index(): JsonResponse
     {
         $users = $this->userRepository->findAll();
@@ -41,10 +44,28 @@ class NewUserController extends AbstractController
             ->response();
     }
 
+
+    #[Route('/users/about',
+        name: 'app_users_about',
+        methods: ['GET'])
+    ]
+    #[IsGranted('ROLE_USER',
+        message: 'You are not allowed to access the admin dashboard.')]
+    public function showMe() : JsonResponse
+    {
+        $user = $this->getUser();
+
+        return $this->apiResponseFormatter
+            ->withData($user->toArray())
+            ->response();
+    }
+
     #[Route('/users/{id}',
         name: 'app_user_show',
         methods: ['GET'])
     ]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function show(int $id) : JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
@@ -53,11 +74,12 @@ class NewUserController extends AbstractController
             ->withData($user->toArray())
             ->response();
     }
-
     #[Route('/users',
         name: 'create_user',
         methods: ['POST'])
     ]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function create(Request $request) : JsonResponse
     {
         $requestData = json_decode($request->getContent(), true);
@@ -85,6 +107,8 @@ class NewUserController extends AbstractController
         name: 'update_user',
         methods: ['PATCH'])
     ]
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     public function update(Request $request, int $id, UserPasswordHasherInterface $passwordHasher) : JsonResponse
     {
         $user = $this->userRepository->findOneBy(['id' => $id]);
@@ -104,6 +128,8 @@ class NewUserController extends AbstractController
 
     }
 
+    #[IsGranted('ROLE_ADMIN',
+        message: 'You are not allowed to access to this function.')]
     #[Route('/users/{id}',
         name: 'delete_user',
         methods: ['DELETE'])
@@ -118,4 +144,5 @@ class NewUserController extends AbstractController
             ->withData($user->toArray())
             ->response();
     }
+
 }
