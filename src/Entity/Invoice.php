@@ -47,6 +47,10 @@ class Invoice
     #[ORM\Column(length: 16)]
     private ?string $tax_number = null;
 
+    #[ORM\ManyToOne(inversedBy: 'invoices')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user_id = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -189,5 +193,36 @@ class Invoice
         $this->tax_number = $tax_number;
 
         return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->user_id;
+    }
+
+    public function setUserId(?User $user_id): static
+    {
+        $this->user_id = $user_id;
+
+        return $this;
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'company_name' => $this->getCompanyName(),
+            'company_street' => $this->getCompanyStreet(),
+            'company_street_number' => $this->getCompanyStreetNumber(),
+            'company_street_flat_number' => $this->getCompanyStreetFlatNumber(),
+            'company_city' => $this->getCompanyCity(),
+            'company_post_code' => $this->getCompanyPostCode(),
+            'created' => $this->getCreated(),
+            'updated' => $this->getUpdated(),
+            'email' => $this->getEmail(),
+            'phone' => $this->getPhone(),
+            'tax_number' => $this->getTaxNumber(),
+            'user_id' => $this->getUserId(),
+        ];
     }
 }

@@ -21,14 +21,9 @@ class UserController extends AbstractController
     {
     }
 
-    #[Route('/users',
-        name: 'app_user',
+    #[Route('/users2',
+        name: 'app_user2',
         methods: ['GET'])
-    ]
-    #[IsGranted('ROLE_SUPER_ADMIN',
-        message: 'You are not allowed to access the admin dashboard.',
-        statusCode: 403,
-        exceptionCode: 10010)
     ]
     public function index(): Response
     {
@@ -44,7 +39,7 @@ class UserController extends AbstractController
             ->response();
         }
 
-    #[Route('/users/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/users2/{id}', name: 'app_user_show2', methods: ['GET'])]
     public function show(int $id){
         $user = $this->UserRepository->findOneBy(['id' => $id]);
 
@@ -53,20 +48,20 @@ class UserController extends AbstractController
             ->response();
     }
 
-    #[Route('/users', name: 'create_user', methods: ['POST'])]
+    #[Route('/users2', name: 'create_user2', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
         dd($request->getContent());
        // return new JsonResponse();
     }
 
-    #[Route('/users', name: 'update_user', methods: ['PATCH'])]
+    #[Route('/users2', name: 'update_user2', methods: ['PATCH'])]
     public function update(int $id): JsonResponse
     {
         return new JsonResponse();
     }
 
-    #[Route('/users', name: 'delete_user', methods: ['DELETE'])]
+    #[Route('/users2', name: 'delete_user2', methods: ['DELETE'])]
     public function delete(int $id): JsonResponse
     {
         return new JsonResponse();
