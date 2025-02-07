@@ -19,6 +19,15 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - 
+    Predis\Client:
+        arguments:
+            - '%redis_dsn%'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    Doctrine\ODM\MongoDB\DocumentManager:
+        factory: ['@doctrine_mongodb.odm.default_document_manager', 'getDocumentManager']
+
+    App\Service\CacheService:
+        arguments:
+            $redis: '@Predis\Client'
+            $documentManager: '@Doctrine\ODM\MongoDB\DocumentManager'
