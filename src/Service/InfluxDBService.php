@@ -23,11 +23,16 @@ class InfluxDBService
     {
         $writeApi = $this->client->createWriteApi();
 
-        $point = Point::measurement($measurement)
-            ->addFields($fields)
-            ->addTags($tags)
-            ->time(time());
+        $point = Point::measurement($measurement);
+        foreach ($fields as $field) {
+            $point->addField($measurement, $field);
+        }
 
+        foreach ($tags as $tag) {
+            $point->addTag($measurement, $tag);
+        }
+
+        $point->time(time());
         $writeApi->write($point);
     }
 
