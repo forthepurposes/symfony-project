@@ -13,3 +13,10 @@ Example
 
 # Blog System
 A simple rest controller which is utilizing abilities of the Caching system to quickly retrieve data to display available blogs. It also has an ability to create new blogs 
+
+# MongoDB Integration
+The blog system uses MongoDB as peristent storage for blog's info
+
+# Unit Tests
+There are some unit tests for some of the controllers. There is at least 10 of them at the moment, the number might increase in the future
+
